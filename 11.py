@@ -23,6 +23,63 @@ def get_product_price(product_name):
     }
     return price_dict.get(product_name, 0)
 
+# Add custom CSS with animations
+def add_custom_css():
+    st.markdown("""
+    <style>
+        body {
+            background-color: #e0f7fa; /* Light blue background */
+            font-family: Arial, sans-serif;
+        }
+        .main-title {
+            color: #00796b; /* Dark teal color */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #004d40; /* Even darker teal color */
+            font-size: 24px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .stButton {
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .stButton:hover {
+            background-color: #004d40;
+        }
+        .input-text, .input-number, .input-area {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .success-message {
+            color: #004d40;
+            font-size: 18px;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .thank-you {
+            text-align: center;
+            font-size: 24px;
+            color: #00796b;
+            animation: bounceIn 2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Sign up page
 def sign_up():
     st.title("Sign Up")
@@ -95,6 +152,9 @@ def place_order():
         st.session_state['orders'].append(order)
         st.success("Order placed successfully!")
 
+        # Display thank you message with animation
+        st.markdown('<div class="thank-you">Thank You for Your Order!</div>', unsafe_allow_html=True)
+
 # Track order page
 def track_order():
     st.title("Track My Order")
@@ -142,4 +202,6 @@ def main():
         main_menu()
 
 if __name__ == "__main__":
+    add_custom_css()
     main()
+
