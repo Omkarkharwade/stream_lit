@@ -1,44 +1,83 @@
-Inventory Updates
 
-User Input:
-Stock Levels: Users enter current stock quantities.
-New Shipments: Input details of incoming shipments including quantity, product type, and expected arrival date.
-Adjustments: Record adjustments for discrepancies or inventory corrections.
-Order Management
+import streamlit as st
 
-User Input:
-Order Entries: Users input customer orders with details like product names, quantities, and delivery addresses.
-Order Status: Update the status of orders (e.g., pending, processed, shipped, delivered).
-Returns and Exchanges: Manage returns or exchanges by entering relevant details.
-Supplier Information
+# Function to handle the sign-up page
+def sign_up_page():
+    st.title("Sign Up Page")
+    
+    # Input fields for sign-up
+    new_username = st.text_input("Create Username")
+    new_password = st.text_input("Create Password", type='password')
+    confirm_password = st.text_input("Confirm Password", type='password')
+    
+    # Validation and submission
+    if st.button("Sign Up"):
+        if new_password == confirm_password:
+            if new_username and new_password:
+                # Save the new user data (For demo purposes, just showing a success message)
+                st.session_state.user_data[new_username] = new_password
+                st.success("Account created successfully! You can now log in.")
+                st.session_state.current_page = "Login"
+            else:
+                st.error("Please enter both username and password.")
+        else:
+            st.error("Passwords do not match.")
 
-User Input:
-Supplier Details: Enter and update supplier contact information, product catalogs, and terms of supply.
-Lead Times: Input lead times for different suppliers and products.
-Performance Records: Record and update supplier performance metrics.
-Transport Scheduling
+# Function to handle the login page
+def login_page():
+    st.title("Login Page")
+    
+    # Input fields for login
+    username = st.text_input("Username")
+    password = st.text_input("Password", type='password')
+    
+    # Validation and submission
+    if st.button("Login"):
+        if username in st.session_state.user_data:
+            if st.session_state.user_data[username] == password:
+                st.session_state.logged_in = True
+                st.session_state.current_page = "Dashboard"
+                st.success("Logged in successfully!")
+            else:
+                st.error("Incorrect password.")
+        else:
+            st.error("Username not found.")
 
-User Input:
-Vehicle Scheduling: Input details for scheduling transport vehicles, including vehicle ID, driver name, and transport route.
-Delivery Dates: Set and adjust delivery dates and times.
-Route Planning: Users can input and modify delivery routes based on current needs.
-Warehouse Layout Adjustments
+# Dashboard or home page after logging in
+def dashboard_page():
+    st.title("Dashboard")
+    st.write("Welcome to the dashboard! You are now logged in.")
 
-User Input:
-Layout Changes: Suggest or input changes to the warehouse layout, such as repositioning storage racks or changing aisle widths.
-Space Utilization: Record feedback on how space is used and propose adjustments.
-Reporting and Feedback
+# Main function to handle page navigation
+def main():
+    # Initialize session state variables
+    if 'user_data' not in st.session_state:
+        st.session_state.user_data = {}
+    if 'logged_in' not in st.session_state:
+        st.session_state.logged_in = False
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = "Login"
 
-User Input:
-Feedback Forms: Users can provide feedback on processes or suggest improvements.
-Issue Reporting: Input issues or problems encountered with inventory or logistics operations.
-Maintenance Requests
+    # Navigation logic
+    if st.session_state.current_page == "Login":
+        login_page()
+        if st.session_state.logged_in:
+            st.session_state.current_page = "Dashboard"
+    elif st.session_state.current_page == "Sign Up":
+        sign_up_page()
+    elif st.session_state.current_page == "Dashboard":
+        dashboard_page()
+    else:
+        st.write("Page not found.")
 
-User Input:
-Maintenance Requests: Enter requests for equipment maintenance or repairs, including the nature of the issue and urgency.
-Service Records: Update and track maintenance and service records.
-Packaging Preferences
+    # Navigation between pages
+    if not st.session_state.logged_in:
+        if st.session_state.current_page == "Login":
+            if st.button("Go to Sign Up"):
+                st.session_state.current_page = "Sign Up"
+        elif st.session_state.current_page == "Sign Up":
+            if st.button("Back to Login"):
+                st.session_state.current_page = "Login"
 
-User Input:
-Packaging Instructions: Specify packaging requirements for different products, including materials and methods.
-Packaging Changes: Update packaging standards based on new requirements or feedback.
+if __name__ == "__main__":
+    main()
