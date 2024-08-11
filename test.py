@@ -118,8 +118,13 @@ def update_inventory(shipment_name, quantity_to_order):
         shipment['quantity'] -= quantity_to_order
         st.write(f"Inventory updated: {quantity_to_order} units of {shipment_name} processed successfully!")
         
-        # Show animation
+        # Show order placed animation
         st.video("https://assets.mixkit.co/videos/preview/mixkit-fast-box-opening-2337-large.mp4")
+        
+        # Display order confirmation message
+        st.success("Your order has been placed successfully!")
+        st.balloons()
+        st.write("Thank you for your order!")
 
 # Check delivery status page
 def check_delivery_status():
@@ -159,5 +164,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
