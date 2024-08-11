@@ -142,8 +142,8 @@ def place_order():
         st.session_state['orders'].append(order)
         st.success("Order placed successfully!")
         
-        # Display animation (example GIF for order placed)
-        st.image("https://media.giphy.com/media/3o6ZsXd8K0j4gsNkPQ/giphy.gif", caption="Order Placed", use_column_width=True)
+        # Display "Thank You" GIF
+        st.image("https://media.giphy.com/media/3o6ZsT3tI60sNc4DdG/giphy.gif", caption="Thank You!", use_column_width=True)
 
 # Track order page
 def track_order():
@@ -163,7 +163,7 @@ def track_order():
                 order['status'] = 'Shipped'
             st.progress((datetime.now() - order['order_date']).days / 5 * 100)
 
-            # Display animation (example GIF for order tracking)
+            # Display tracking animation (optional)
             st.image("https://media.giphy.com/media/3o6ZsTxIj9b71H8PzK/giphy.gif", caption="Tracking Order", use_column_width=True)
 
 # Inventory page
@@ -197,4 +197,5 @@ def main():
 if __name__ == "__main__":
     add_custom_css()
     main()
+
 
