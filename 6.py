@@ -22,50 +22,62 @@ def get_product_price(product_name):
     product_info = st.session_state['products'].get(product_name)
     return product_info['price'] if product_info else random.randint(1000, 50000)
 
-# Add custom CSS with animations and colors
+# Add custom CSS with animations and a purple background
 def add_custom_css():
     st.markdown("""
     <style>
         body {
-            background-color: #e0f7fa; /* Light blue background */
+            background-color: #6a1b9a; /* Purple background */
             font-family: Arial, sans-serif;
         }
         .main-title {
-            color: #00796b; /* Dark teal color */
+            color: #ffeb3b; /* Yellow color */
             text-align: center;
             margin-bottom: 20px;
         }
         .section-title {
-            color: #004d40; /* Even darker teal color */
+            color: #d1c4e9; /* Light purple color */
             font-size: 24px;
             margin-top: 20px;
             margin-bottom: 10px;
         }
         .stButton > button {
-            background-color: #00796b;
-            color: white;
+            background-color: #ffeb3b; /* Yellow button */
+            color: #6a1b9a; /* Purple text */
             border: none;
             border-radius: 5px;
             padding: 10px 20px;
             cursor: pointer;
         }
         .stButton > button:hover {
-            background-color: #004d40;
+            background-color: #d1c4e9; /* Light purple */
+            color: #6a1b9a;
         }
         .input-text, .input-number, .input-area {
             margin-bottom: 15px;
             width: 100%;
         }
         .success-message {
-            color: #004d40;
+            color: #ffeb3b;
             font-size: 18px;
             animation: fadeIn 2s ease-in-out;
         }
         .thank-you {
             text-align: center;
             font-size: 24px;
-            color: #00796b;
+            color: #ffeb3b;
             animation: bounceIn 2s;
+        }
+        .congrats {
+            text-align: center;
+            font-size: 30px;
+            color: #ffeb3b;
+            animation: zoomIn 3s;
+            font-weight: bold;
+        }
+        .order-animation {
+            text-align: center;
+            animation: fadeIn 3s ease-in-out infinite;
         }
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -74,6 +86,11 @@ def add_custom_css():
         @keyframes bounceIn {
             0% { opacity: 0; transform: scale(0.3); }
             50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes zoomIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.1); }
             100% { opacity: 1; transform: scale(1); }
         }
     </style>
@@ -162,7 +179,14 @@ def place_order():
 
             st.success("Order placed successfully!")
 
+            # Display congratulations message with animation
+            st.markdown('<div class="congrats">Congratulations! Your Order is Confirmed!</div>', unsafe_allow_html=True)
+
+            # Display thank you message with animation
             st.markdown('<div class="thank-you">Thank You for Your Order!</div>', unsafe_allow_html=True)
+
+            # Add a custom animation after order placement
+            st.markdown('<div class="order-animation">🎉 Order Placed Successfully! 🎉</div>', unsafe_allow_html=True)
     else:
         st.warning("Please enter a product name.")
 
