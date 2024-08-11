@@ -1,8 +1,9 @@
 import streamlit as st
 import random
 from datetime import datetime, timedelta
+import time
 
-# Mock data for shipments
+# Initial data for shipments
 shipments = {
     'Shipment A': {'quantity': 50, 'shipping_date': datetime.now() + timedelta(days=5), 'delivery_date': datetime.now() + timedelta(days=30)},
     'Shipment B': {'quantity': 20, 'shipping_date': datetime.now() + timedelta(days=3), 'delivery_date': datetime.now() + timedelta(days=15)},
@@ -18,6 +19,23 @@ metro_cities = [
     'Ahmedabad', 'Pune', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
 ]
 
+# Add a new product with a random price
+def add_product():
+    st.title("Add New Product")
+    product_name = st.text_input("Product Name")
+    if st.button("Add Product"):
+        if product_name:
+            price = random.randint(1000, 50000)
+            shipments[product_name] = {
+                'quantity': random.randint(10, 100),
+                'price': price,
+                'shipping_date': datetime.now() + timedelta(days=random.randint(1, 10)),
+                'delivery_date': datetime.now() + timedelta(days=random.randint(20, 50))
+            }
+            st.success(f"Product '{product_name}' added with price {price} successfully!")
+        else:
+            st.error("Product name cannot be empty")
+
 # Sign up page
 def sign_up():
     st.title("Sign Up")
@@ -27,7 +45,6 @@ def sign_up():
     
     if st.button("Sign Up"):
         if password == confirm_password:
-            # In a real application, you would save the user data to a database
             st.session_state['username'] = username
             st.session_state['password'] = password
             st.success("Sign Up successful! Please log in.")
@@ -52,21 +69,20 @@ def login():
 # Dashboard page
 def dashboard():
     st.title("Logistics Dashboard")
-    shipment_name = st.selectbox("Select Shipment", list(shipments.keys()))
-    st.write(f"Shipment: {shipment_name}")
+    action = st.selectbox("Select Action", ["Track Shipment", "Manage Inventory", "Check Delivery Status", "Add Product"])
     
-    if st.button("Track Shipment"):
-        track_shipment(shipment_name)
-    
-    if st.button("Manage Inventory"):
-        manage_inventory(shipment_name)
-
-    if st.button("Check Delivery Status"):
-        check_delivery_status(shipment_name)
+    if action == "Track Shipment":
+        track_shipment()
+    elif action == "Manage Inventory":
+        manage_inventory()
+    elif action == "Check Delivery Status":
+        check_delivery_status()
+    elif action == "Add Product":
+        add_product()
 
 # Track shipment page
-def track_shipment(shipment_name):
-    st.title("Track Shipment")
+def track_shipment():
+    shipment_name = st.selectbox("Select Shipment", list(shipments.keys()))
     shipment = shipments[shipment_name]
     
     # Randomly select a metro city
@@ -76,15 +92,14 @@ def track_shipment(shipment_name):
     st.write(f"Shipping Status: {'Shipped' if datetime.now() > shipment['shipping_date'] else 'Pending'}")
     st.write(f"Current Location: {city}")
     
-    # Calculate progress as percentage of shipping duration
     days_since_shipping = (datetime.now() - shipment['shipping_date']).days
     shipping_duration = (shipment['delivery_date'] - shipment['shipping_date']).days
-    progress = min(max(days_since_shipping / shipping_duration * 100, 0), 100)  # Clamp between 0 and 100
+    progress = min(max(days_since_shipping / shipping_duration * 100, 0), 100)
     st.progress(progress)
 
 # Manage inventory page
-def manage_inventory(shipment_name):
-    st.title("Manage Inventory")
+def manage_inventory():
+    shipment_name = st.selectbox("Select Shipment", list(shipments.keys()))
     shipment = shipments[shipment_name]
     st.write(f"Shipment: {shipment_name}")
     st.write(f"Quantity Available: {shipment['quantity']}")
@@ -95,7 +110,6 @@ def manage_inventory(shipment_name):
 
 # Update inventory page
 def update_inventory(shipment_name, quantity_to_order):
-    st.title("Inventory Updated")
     shipment = shipments[shipment_name]
     
     if quantity_to_order > shipment['quantity']:
@@ -103,10 +117,13 @@ def update_inventory(shipment_name, quantity_to_order):
     else:
         shipment['quantity'] -= quantity_to_order
         st.write(f"Inventory updated: {quantity_to_order} units of {shipment_name} processed successfully!")
+        
+        # Show animation
+        st.video("https://assets.mixkit.co/videos/preview/mixkit-fast-box-opening-2337-large.mp4")
 
 # Check delivery status page
-def check_delivery_status(shipment_name):
-    st.title("Check Delivery Status")
+def check_delivery_status():
+    shipment_name = st.selectbox("Select Shipment", list(shipments.keys()))
     shipment = shipments[shipment_name]
     if datetime.now() > shipment['delivery_date']:
         st.error("Shipment has been delivered!")
@@ -121,7 +138,7 @@ def main():
         st.session_state['logged_in'] = False
 
     if 'page' not in st.session_state:
-        st.session_state['page'] = 'signup'  # Default to sign-up page
+        st.session_state['page'] = 'signup'
 
     if not st.session_state['logged_in']:
         if st.session_state['page'] == 'signup':
@@ -142,3 +159,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
