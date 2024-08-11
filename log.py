@@ -2,14 +2,15 @@ import streamlit as st
 import random
 from datetime import datetime, timedelta
 
+# In-memory user storage for demonstration purposes
+if "USER_CREDENTIALS" not in st.session_state:
+    st.session_state.USER_CREDENTIALS = {}
+
 # List of metro cities for random selection
 metro_cities = [
     'Mumbai', 'Delhi', 'Bengaluru', 'Kolkata', 'Chennai', 'Hyderabad', 
     'Ahmedabad', 'Pune', 'Jaipur', 'Surat'
 ]
-
-# In-memory user storage for demonstration purposes
-USER_CREDENTIALS = {}
 
 # Function to generate random total price
 def calculate_total_price(quantity):
@@ -31,8 +32,8 @@ def sign_up_page():
     if st.button("Sign Up"):
         if username and password and confirm_password:
             if password == confirm_password:
-                if username not in USER_CREDENTIALS:
-                    USER_CREDENTIALS[username] = password
+                if username not in st.session_state.USER_CREDENTIALS:
+                    st.session_state.USER_CREDENTIALS[username] = password
                     st.success("Account created successfully! You can now log in.")
                 else:
                     st.error("Username already exists.")
@@ -51,7 +52,7 @@ def log_in_page():
 
     if st.button("Log In"):
         if username and password:
-            if USER_CREDENTIALS.get(username) == password:
+            if st.session_state.USER_CREDENTIALS.get(username) == password:
                 st.session_state.authenticated = True
                 st.success("Logged in successfully!")
             else:
@@ -109,6 +110,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
