@@ -1,8 +1,15 @@
 import streamlit as st
 import random
 
-# Mock user data for authentication
-user_data = {'username': 'user', 'password': 'pass'}
+# Initialize session state variables
+if 'users' not in st.session_state:
+    st.session_state['users'] = {'user': 'pass'}  # Pre-defined user
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
+if 'page' not in st.session_state:
+    st.session_state['page'] = 'Sign In'
+if 'order_placed' not in st.session_state:
+    st.session_state['order_placed'] = False
 
 # List of metro cities in India
 metro_cities = [
@@ -15,10 +22,12 @@ def sign_in():
     st.title("Sign In")
     username = st.text_input("Username")
     password = st.text_input("Password", type='password')
+    
     if st.button("Sign In"):
-        if username == user_data['username'] and password == user_data['password']:
+        if username in st.session_state['users'] and st.session_state['users'][username] == password:
             st.success("Signed in successfully!")
             st.session_state['logged_in'] = True
+            st.session_state['page'] = 'Order'
         else:
             st.error("Invalid username or password")
 
@@ -27,9 +36,14 @@ def sign_up():
     st.title("Sign Up")
     username = st.text_input("New Username")
     password = st.text_input("New Password", type='password')
+    
     if st.button("Sign Up"):
-        st.success("Sign up successful! Please sign in.")
-        st.session_state['page'] = 'Sign In'
+        if username in st.session_state['users']:
+            st.error("Username already exists! Please choose a different username.")
+        else:
+            st.session_state['users'][username] = password
+            st.success("Sign up successful! Please sign in.")
+            st.session_state['page'] = 'Sign In'
 
 # Order page with colorful background animation
 def order_page():
@@ -77,7 +91,7 @@ def order_page():
 
 # Track order and thank you message
 def track_order():
-    if 'order_placed' in st.session_state:
+    if st.session_state['order_placed']:
         st.write(f"Product Name: {st.session_state['product_name']}")
         st.write(f"Quantity: {st.session_state['quantity']}")
         st.write(f"Total Price: ₹{st.session_state['price']}")
@@ -95,11 +109,6 @@ def track_order():
 def main():
     st.sidebar.title("Navigation")
     
-    if 'page' not in st.session_state:
-        st.session_state['page'] = 'Sign In'
-    if 'logged_in' not in st.session_state:
-        st.session_state['logged_in'] = False
-    
     page = st.sidebar.radio("Go to", ["Sign In", "Sign Up", "Order", "Track Order"])
     
     if page == "Sign In":
@@ -112,11 +121,12 @@ def main():
         else:
             st.error("Please sign in first.")
     elif page == "Track Order":
-        if st.session_state.get('order_placed', False):
+        if st.session_state['order_placed']:
             track_order()
         else:
             st.error("No order to track.")
 
 if __name__ == "__main__":
     main()
+
 
