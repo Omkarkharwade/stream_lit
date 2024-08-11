@@ -1,17 +1,16 @@
 import streamlit as st
-import pandas as pd
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
 
-# Mock data for products
-products = {
-    'Product A': {'quantity': 50, 'shipping_date': datetime.now() + timedelta(days=5), 'expiry_date': datetime.now() + timedelta(days=30)},
-    'Product B': {'quantity': 20, 'shipping_date': datetime.now() + timedelta(days=3), 'expiry_date': datetime.now() + timedelta(days=15)},
-    'Product C': {'quantity': 100, 'shipping_date': datetime.now() + timedelta(days=7), 'expiry_date': datetime.now() + timedelta(days=45)},
+# Mock data for shipments
+shipments = {
+    'Shipment A': {'quantity': 50, 'shipping_date': datetime.now() + timedelta(days=5), 'delivery_date': datetime.now() + timedelta(days=30)},
+    'Shipment B': {'quantity': 20, 'shipping_date': datetime.now() + timedelta(days=3), 'delivery_date': datetime.now() + timedelta(days=15)},
+    'Shipment C': {'quantity': 100, 'shipping_date': datetime.now() + timedelta(days=7), 'delivery_date': datetime.now() + timedelta(days=45)},
 }
 
 # Mock user data
-user_data = {'username': 'user', 'password': 'pass'}
+user_data = {'username': 'admin', 'password': 'admin'}
 
 # List of metro cities in India
 metro_cities = [
@@ -46,64 +45,64 @@ def login():
         if username == st.session_state.get('username') and password == st.session_state.get('password'):
             st.success("Logged in successfully!")
             st.session_state['logged_in'] = True
-            st.session_state['page'] = 'products'
+            st.session_state['page'] = 'dashboard'
         else:
             st.error("Invalid username or password")
 
-# Product page
-def product_page():
-    st.title("Products")
-    product_name = st.selectbox("Select Product", list(products.keys()))
-    st.write(f"Product Name: {product_name}")
+# Dashboard page
+def dashboard():
+    st.title("Logistics Dashboard")
+    shipment_name = st.selectbox("Select Shipment", list(shipments.keys()))
+    st.write(f"Shipment: {shipment_name}")
     
-    if st.button("Track My Order"):
-        track_order(product_name)
+    if st.button("Track Shipment"):
+        track_shipment(shipment_name)
     
-    if st.button("Browse Items"):
-        browse_items(product_name)
+    if st.button("Manage Inventory"):
+        manage_inventory(shipment_name)
 
-    if st.button("Check Expiry"):
-        check_expiry(product_name)
+    if st.button("Check Delivery Status"):
+        check_delivery_status(shipment_name)
 
-# Track order page
-def track_order(product_name):
-    st.title("Track My Order")
-    product = products[product_name]
+# Track shipment page
+def track_shipment(shipment_name):
+    st.title("Track Shipment")
+    shipment = shipments[shipment_name]
     
     # Randomly select a metro city
     city = random.choice(metro_cities)
     
     st.write(f"Order Date: {datetime.now().strftime('%Y-%m-%d')}")
-    st.write(f"Shipping Status: {'Shipped' if datetime.now() > product['shipping_date'] else 'Pending'}")
+    st.write(f"Shipping Status: {'Shipped' if datetime.now() > shipment['shipping_date'] else 'Pending'}")
     st.write(f"Current Location: {city}")
-    st.progress((datetime.now() - (product['shipping_date'] - timedelta(days=5))).days / 5 * 100)
+    st.progress((datetime.now() - (shipment['shipping_date'] - timedelta(days=5))).days / 5 * 100)
 
-# Browse items page
-def browse_items(product_name):
-    st.title("Browse Items")
-    product = products[product_name]
-    st.write(f"Product Name: {product_name}")
-    st.write(f"Quantity in Warehouse: {product['quantity']}")
+# Manage inventory page
+def manage_inventory(shipment_name):
+    st.title("Manage Inventory")
+    shipment = shipments[shipment_name]
+    st.write(f"Shipment: {shipment_name}")
+    st.write(f"Quantity Available: {shipment['quantity']}")
     
-    quantity_to_order = st.number_input("Enter Quantity to Order", min_value=1, max_value=product['quantity'])
-    if st.button("Place Order"):
-        place_order(product_name, quantity_to_order)
+    quantity_to_order = st.number_input("Enter Quantity to Order", min_value=1, max_value=shipment['quantity'])
+    if st.button("Update Inventory"):
+        update_inventory(shipment_name, quantity_to_order)
 
-# Place order page
-def place_order(product_name, quantity_to_order):
-    st.title("Order Placement")
-    st.write(f"Order placed for {quantity_to_order} units of {product_name} successfully!")
+# Update inventory page
+def update_inventory(shipment_name, quantity_to_order):
+    st.title("Inventory Updated")
+    st.write(f"Inventory updated: {quantity_to_order} units of {shipment_name} processed successfully!")
 
-# Check expiry page
-def check_expiry(product_name):
-    st.title("Check Expiry")
-    product = products[product_name]
-    if datetime.now() > product['expiry_date']:
-        st.error("Product has expired!")
-        if st.button("Cancel Order"):
-            st.write("Order cancelled successfully!")
+# Check delivery status page
+def check_delivery_status(shipment_name):
+    st.title("Check Delivery Status")
+    shipment = shipments[shipment_name]
+    if datetime.now() > shipment['delivery_date']:
+        st.error("Shipment has been delivered!")
+        if st.button("Record Delivery"):
+            st.write("Delivery recorded successfully!")
     else:
-        st.write(f"Product will expire on {product['expiry_date'].strftime('%Y-%m-%d')}")
+        st.write(f"Expected Delivery Date: {shipment['delivery_date'].strftime('%Y-%m-%d')}")
 
 # Main function
 def main():
@@ -120,11 +119,11 @@ def main():
             login()
     else:
         st.sidebar.title("Menu")
-        menu = ["Products", "Logout"]
+        menu = ["Dashboard", "Logout"]
         choice = st.sidebar.selectbox("Choose Option", menu)
 
-        if choice == "Products":
-            product_page()
+        if choice == "Dashboard":
+            dashboard()
         elif choice == "Logout":
             st.session_state['logged_in'] = False
             st.session_state['page'] = 'login'
@@ -132,5 +131,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
