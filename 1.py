@@ -22,12 +22,12 @@ def get_product_price(product_name):
     product_info = st.session_state['products'].get(product_name)
     return product_info['price'] if product_info else random.randint(1000, 50000)
 
-# Add custom CSS with animations and a purple background
+# Add custom CSS with animations and a red background
 def add_custom_css():
     st.markdown("""
     <style>
         body {
-            background-color: #6a1b9a; /* Purple background */
+            background-color: #FF0000; /* Red background */
             font-family: Arial, sans-serif;
         }
         .main-title {
@@ -43,7 +43,7 @@ def add_custom_css():
         }
         .stButton > button {
             background-color: #ffeb3b; /* Yellow button */
-            color: #6a1b9a; /* Purple text */
+            color: #FF0000; /* Red text */
             border: none;
             border-radius: 5px;
             padding: 10px 20px;
@@ -51,7 +51,7 @@ def add_custom_css():
         }
         .stButton > button:hover {
             background-color: #d1c4e9; /* Light purple */
-            color: #6a1b9a;
+            color: #FF0000;
         }
         .input-text, .input-number, .input-area {
             margin-bottom: 15px;
@@ -274,3 +274,4 @@ def main():
 if __name__ == "__main__":
     add_custom_css()
     main()
+
