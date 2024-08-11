@@ -23,54 +23,9 @@ def get_product_price(product_name):
     }
     return price_dict.get(product_name, 0)
 
-# Add custom CSS for styling
-def add_custom_css():
-    st.markdown("""
-    <style>
-        body {
-            background-color: #f0f2f6;
-            font-family: Arial, sans-serif;
-        }
-        .main-title {
-            color: #ff6f61;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .section-title {
-            color: #333;
-            font-size: 24px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .stButton {
-            background-color: #ff6f61;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        .stButton:hover {
-            background-color: #ff3b30;
-        }
-        .input-text, .input-number, .input-area {
-            margin-bottom: 15px;
-            width: 100%;
-        }
-        .success-message {
-            color: #28a745;
-        }
-        .error-message {
-            color: #dc3545;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
 # Sign up page
 def sign_up():
     st.title("Sign Up")
-    st.markdown('<div class="main-title">Sign Up</div>', unsafe_allow_html=True)
-
     username = st.text_input("Choose a Username")
     password = st.text_input("Choose a Password", type='password')
     confirm_password = st.text_input("Confirm Password", type='password')
@@ -88,8 +43,6 @@ def sign_up():
 # Login page
 def login():
     st.title("Log In")
-    st.markdown('<div class="main-title">Log In</div>', unsafe_allow_html=True)
-
     username = st.text_input("Username")
     password = st.text_input("Password", type='password')
     
@@ -142,8 +95,8 @@ def place_order():
         st.session_state['orders'].append(order)
         st.success("Order placed successfully!")
         
-        # Display "Thank You" GIF
-        st.image("https://media.giphy.com/media/3o6ZsT3tI60sNc4DdG/giphy.gif", caption="Thank You!", use_column_width=True)
+        # Display thank you image
+        st.image("https://media.giphy.com/media/3o6ZsXd8K0j4gsNkPQ/giphy.gif", caption="Thank You", use_column_width=True)
 
 # Track order page
 def track_order():
@@ -162,9 +115,6 @@ def track_order():
             if datetime.now() > order['shipping_date']:
                 order['status'] = 'Shipped'
             st.progress((datetime.now() - order['order_date']).days / 5 * 100)
-
-            # Display tracking animation (optional)
-            st.image("https://media.giphy.com/media/3o6ZsTxIj9b71H8PzK/giphy.gif", caption="Tracking Order", use_column_width=True)
 
 # Inventory page
 def inventory():
@@ -195,7 +145,7 @@ def main():
         main_menu()
 
 if __name__ == "__main__":
-    add_custom_css()
     main()
+
 
 
