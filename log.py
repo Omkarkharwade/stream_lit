@@ -2,23 +2,14 @@ import streamlit as st
 import random
 from datetime import datetime, timedelta
 from streamlit_option_menu import option_menu
-from streamlit_lottie import st_lottie
-import requests
 
-# Function to load Lottie animation from URL
-def load_lottie_url(url):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
-
-# Lottie animations
-success_animation = load_lottie_url("https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json")
-track_animation = load_lottie_url("https://assets5.lottiefiles.com/packages/lf20_ni4sqkmd.json")
+# Mock Lottie animation with a placeholder function
+def st_lottie(*args, **kwargs):
+    st.write("[Animation Placeholder]")
 
 # List of metro cities for random selection
 metro_cities = [
-    'Mumbai', 'Delhi', 'Bengaluru', 'Kolkata', 'Chennai', 'Hyderabad', 
+    'Mumbai', 'Delhi', 'Bengaluru', 'Kolkata', 'Chennai', 'Hyderabad',
     'Ahmedabad', 'Pune', 'Jaipur', 'Surat'
 ]
 
@@ -31,62 +22,80 @@ def expected_delivery_date():
     return datetime.now() + timedelta(days=random.randint(1, 5))
 
 # Sidebar menu
-selected = option_menu(
-    menu_title=None,  # required
-    options=["Sign In", "Log In", "Enter Product Details", "Track Order", "Thank You"],  # required
-    icons=["person", "key", "cart", "map", "smiley"],  # optional
-    orientation="horizontal",
-)
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
 
-if selected == "Sign In":
-    st.title("Sign In")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type='password')
-    if st.button("Sign In"):
-        st.success("Signed in successfully!")
-        st_lottie(success_animation, height=300, key="success1")
+if not st.session_state['logged_in']:
+    selected = option_menu(
+        menu_title="Logistics App",  # Title for the menu
+        options=["Sign In", "Log In"],  # Menu options
+        icons=["person", "key"],  # Optional icons for each menu option
+        orientation="horizontal",  # Horizontal layout
+    )
 
-elif selected == "Log In":
-    st.title("Log In")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type='password')
-    if st.button("Log In"):
-        st.success("Logged in successfully!")
-        st_lottie(success_animation, height=300, key="success2")
+    if selected == "Sign In":
+        st.title("Sign In")
+        username = st.text_input("Create Username")
+        password = st.text_input("Create Password", type='password')
+        if st.button("Sign In"):
+            st.session_state['username'] = username
+            st.session_state['password'] = password
+            st.success("Account created successfully! Please log in.")
+            st_lottie()  # Placeholder for animation
 
-elif selected == "Enter Product Details":
-    st.title("Enter Product Details")
-    
-    # Step 1: Enter Product Name
-    product_name = st.text_input("Enter the product name")
+    elif selected == "Log In":
+        st.title("Log In")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type='password')
+        if st.button("Log In"):
+            if username == st.session_state.get('username') and password == st.session_state.get('password'):
+                st.success("Logged in successfully!")
+                st.session_state['logged_in'] = True
+                st_lottie()  # Placeholder for animation
+            else:
+                st.error("Invalid username or password")
+else:
+    selected = option_menu(
+        menu_title="Logistics App",  # Title for the menu
+        options=["Enter Product Details", "Track Order", "Thank You"],  # Menu options
+        icons=["cart", "map", "smiley"],  # Optional icons for each menu option
+        orientation="horizontal",  # Horizontal layout
+    )
 
-    # Step 2: Enter Quantity
-    quantity = st.number_input("Enter the quantity of product", min_value=1, step=1)
+    if selected == "Enter Product Details":
+        st.title("Enter Product Details")
 
-    # Step 3: Calculate Total Price
-    if quantity:
-        total_price = calculate_total_price(quantity)
-        st.write(f"Total Price: ₹{total_price}")
+        # Step 1: Enter Product Name
+        product_name = st.text_input("Enter the product name")
 
-    # Step 4: Enter Delivery Address
-    address = st.text_area("Enter the delivery address")
-    
-    if product_name and quantity and address:
-        st.success("Product details entered successfully!")
-        st_lottie(success_animation, height=300, key="success3")
+        # Step 2: Enter Quantity
+        quantity = st.number_input("Enter the quantity of product", min_value=1, step=1)
 
-elif selected == "Track Order":
-    st.title("Track Your Order")
+        # Step 3: Calculate Total Price
+        if quantity:
+            total_price = calculate_total_price(quantity)
+            st.write(f"Total Price: ₹{total_price}")
 
-    if st.button("Track My Order"):
-        # Track My Order (Random Metro City)
-        city = random.choice(metro_cities)
-        delivery_date = expected_delivery_date().strftime('%Y-%m-%d')
-        st.write(f"Your order is being shipped to {city}.")
-        st.write(f"Expected Delivery Date: {delivery_date}")
-        st_lottie(track_animation, height=300, key="track1")
+        # Step 4: Enter Delivery Address
+        address = st.text_area("Enter the delivery address")
 
-elif selected == "Thank You":
-    st.title("Thank You!")
-    st.write("Thank you for ordering from our logistics service!")
-    st_lottie(success_animation, height=300, key="thankyou")
+        if product_name and quantity and address:
+            st.success("Product details entered successfully!")
+            st_lottie()  # Placeholder for animation
+
+    elif selected == "Track Order":
+        st.title("Track Your Order")
+
+        if st.button("Track My Order"):
+            # Track My Order (Random Metro City)
+            city = random.choice(metro_cities)
+            delivery_date = expected_delivery_date().strftime('%Y-%m-%d')
+            st.write(f"Your order is being shipped to {city}.")
+            st.write(f"Expected Delivery Date: {delivery_date}")
+            st_lottie()  # Placeholder for animation
+
+    elif selected == "Thank You":
+        st.title("Thank You!")
+        st.write("Thank you for ordering from our logistics service!")
+        st_lottie()  # Placeholder for animation
+
