@@ -1,9 +1,9 @@
 import streamlit as st
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# Mock user data
-user_data = {'username': 'admin', 'password': 'admin'}
+# Mock user data for authentication
+user_data = {'username': 'user', 'password': 'pass'}
 
 # List of metro cities in India
 metro_cities = [
@@ -11,123 +11,113 @@ metro_cities = [
     'Ahmedabad', 'Pune', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
 ]
 
-# Set background style
-st.markdown(
-    """
-    <style>
-    body {
-        background-image: url('https://your-logistics-themed-background-image-url');
-        background-size: cover;
-    }
-    </style>
-    """, unsafe_allow_html=True
-)
+# Animation for order placement
+def show_animation():
+    st.markdown(
+        """
+        <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+            color: #ff4b2b;
+            font-size: 30px;
+        }
+        </style>
+        <div class="pulse">🎉 Thank You for Your Order! 🎉</div>
+        """, unsafe_allow_html=True
+    )
 
-# Add a new product with a random price
-def add_product():
-    st.title("Place Your Order")
-    product_name = st.text_input("Product Name")
-    if st.button("Generate Price"):
-        if product_name:
-            price = random.randint(1000, 50000)
-            st.session_state['product'] = {
-                'name': product_name,
-                'price': price,
-                'quantity': random.randint(10, 100),
-            }
-            st.success(f"Product '{product_name}' price is ₹{price}. Please proceed to place the order.")
+# Sign in page
+def sign_in():
+    st.title("Sign In")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type='password')
+    if st.button("Sign In"):
+        if username == user_data['username'] and password == user_data['password']:
+            st.success("Signed in successfully!")
+            st.session_state['logged_in'] = True
         else:
-            st.error("Product name cannot be empty")
-
-    if 'product' in st.session_state:
-        city = st.selectbox("Select City for Shipping", metro_cities)
-        address = st.text_area("Enter Shipping Address")
-        
-        if st.button("Place Order"):
-            if city and address:
-                st.session_state['product']['city'] = city
-                st.session_state['product']['address'] = address
-                st.session_state['page'] = 'order_confirmation'
-            else:
-                st.error("Please provide a shipping address and select a city.")
+            st.error("Invalid username or password")
 
 # Sign up page
 def sign_up():
     st.title("Sign Up")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type='password')
-    confirm_password = st.text_input("Confirm Password", type='password')
-    
+    username = st.text_input("New Username")
+    password = st.text_input("New Password", type='password')
     if st.button("Sign Up"):
-        if password == confirm_password:
-            st.session_state['username'] = username
-            st.session_state['password'] = password
-            st.success("Sign Up successful! Please log in.")
-            st.session_state['page'] = 'login'
-        else:
-            st.error("Passwords do not match")
+        st.success("Sign up successful! Please sign in.")
+        st.session_state['page'] = 'Sign In'
 
-# Login page
-def login():
-    st.title("Login")
-    username = st.text_input("Username")
-    password = st.text_input("Password", type='password')
+# Order page
+def order_page():
+    st.title("Product Order")
     
-    if st.button("Login"):
-        if username == st.session_state.get('username') and password == st.session_state.get('password'):
-            st.success("Logged in successfully!")
-            st.session_state['logged_in'] = True
-            st.session_state['page'] = 'dashboard'
-        else:
-            st.error("Invalid username or password")
+    product_name = st.text_input("Enter Product Name")
+    quantity = st.number_input("Enter Quantity", min_value=1)
+    
+    if quantity > 0:
+        price = random.randint(1000, 50000) * quantity
+        st.write(f"Total Price: ₹{price}")
+    
+    city = st.selectbox("Where do you want to ship the product?", metro_cities)
+    address = st.text_area("Enter Delivery Address")
+    
+    if st.button("Place Order"):
+        st.success("Order placed successfully!")
+        st.session_state['order_placed'] = True
+        st.session_state['product_name'] = product_name
+        st.session_state['quantity'] = quantity
+        st.session_state['price'] = price
+        st.session_state['city'] = city
+        st.session_state['address'] = address
 
-# Dashboard page
-def dashboard():
-    st.title("Logistics Dashboard")
-    action = st.selectbox("Select Action", ["Place Order", "Logout"])
+# Track order page
+def track_order():
+    st.title("Track My Product")
     
-    if action == "Place Order":
-        add_product()
-    elif action == "Logout":
-        st.session_state['logged_in'] = False
-        st.session_state['page'] = 'login'
-        st.write("Logged out successfully!")
-
-# Order confirmation page
-def order_confirmation():
-    st.title("Order Confirmation")
-    product = st.session_state['product']
-    
-    if product:
-        st.write(f"Product Name: {product['name']}")
-        st.write(f"Price: ₹{product['price']}")
-        st.write(f"Quantity Ordered: {product['quantity']}")
-        st.write(f"Shipping to: {product['city']}")
-        st.write(f"Shipping Address: {product['address']}")
+    if 'product_name' in st.session_state:
+        st.write(f"Product Name: {st.session_state['product_name']}")
+        st.write(f"Quantity: {st.session_state['quantity']}")
+        st.write(f"Total Price: ₹{st.session_state['price']}")
+        st.write(f"Shipping to: {st.session_state['city']}")
+        st.write(f"Delivery Address: {st.session_state['address']}")
         
-        st.balloons()
-        st.success("Your order has been placed successfully!")
-        st.write("Thank you for using our logistics service!")
+        current_city = random.choice(metro_cities)
+        st.write(f"Current Location: {current_city}")
+        
+        show_animation()
+    else:
+        st.write("No order placed yet.")
 
 # Main function
 def main():
+    st.sidebar.title("Navigation")
+    
+    if 'page' not in st.session_state:
+        st.session_state['page'] = 'Sign In'
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
-
-    if 'page' not in st.session_state:
-        st.session_state['page'] = 'signup'
-
-    if not st.session_state['logged_in']:
-        if st.session_state['page'] == 'signup':
-            sign_up()
-        elif st.session_state['page'] == 'login':
-            login()
-    else:
-        if st.session_state['page'] == 'dashboard':
-            dashboard()
-        elif st.session_state['page'] == 'order_confirmation':
-            order_confirmation()
+    
+    page = st.sidebar.radio("Go to", ["Sign In", "Sign Up", "Order", "Track Order"])
+    
+    if page == "Sign In":
+        sign_in()
+    elif page == "Sign Up":
+        sign_up()
+    elif page == "Order":
+        if st.session_state['logged_in']:
+            order_page()
+        else:
+            st.error("Please sign in first.")
+    elif page == "Track Order":
+        if st.session_state.get('order_placed', False):
+            track_order()
+        else:
+            st.error("No order to track.")
 
 if __name__ == "__main__":
     main()
-
