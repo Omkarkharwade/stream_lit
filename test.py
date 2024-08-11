@@ -19,15 +19,34 @@ metro_cities = [
     'Ahmedabad', 'Pune', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur'
 ]
 
-# Sign in page
-def sign_in():
-    st.title("Sign In")
+# Sign up page
+def sign_up():
+    st.title("Sign Up")
     username = st.text_input("Username")
     password = st.text_input("Password", type='password')
-    if st.button("Sign In"):
-        if username == user_data['username'] and password == user_data['password']:
-            st.success("Signed in successfully!")
+    confirm_password = st.text_input("Confirm Password", type='password')
+    
+    if st.button("Sign Up"):
+        if password == confirm_password:
+            # In a real application, you would save the user data to a database
+            st.session_state['username'] = username
+            st.session_state['password'] = password
+            st.success("Sign Up successful! Please log in.")
+            st.session_state['page'] = 'login'
+        else:
+            st.error("Passwords do not match")
+
+# Login page
+def login():
+    st.title("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type='password')
+    
+    if st.button("Login"):
+        if username == st.session_state.get('username') and password == st.session_state.get('password'):
+            st.success("Logged in successfully!")
             st.session_state['logged_in'] = True
+            st.session_state['page'] = 'products'
         else:
             st.error("Invalid username or password")
 
@@ -91,8 +110,14 @@ def main():
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
 
+    if 'page' not in st.session_state:
+        st.session_state['page'] = 'signup'  # Default to sign-up page
+
     if not st.session_state['logged_in']:
-        sign_in()
+        if st.session_state['page'] == 'signup':
+            sign_up()
+        elif st.session_state['page'] == 'login':
+            login()
     else:
         st.sidebar.title("Menu")
         menu = ["Products", "Logout"]
@@ -102,8 +127,10 @@ def main():
             product_page()
         elif choice == "Logout":
             st.session_state['logged_in'] = False
+            st.session_state['page'] = 'login'
             st.write("Logged out successfully!")
 
 if __name__ == "__main__":
     main()
+
 
